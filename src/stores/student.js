@@ -4,6 +4,8 @@ import axios from 'axios';
 
 export const useStudentStore = defineStore('student', () => {
     const studentList = ref([]);
+    const handleStudent = ref({})
+    const deleteStudentId = ref(0)
 
     async function fetchStudentList() {
         try {
@@ -37,15 +39,16 @@ export const useStudentStore = defineStore('student', () => {
             console.error(error);
         }
     }
-
-    async function fetchStudentByStudentId(studentId) {
+    async function deleteStudentByStudentId(studentId) {
         try {
-            const response = await axios.get('http://localhost:8080/student//getStudentById?Id=' + studentId);
-            return response.data.data
+            console.log(`http://localhost:8080/student/deleteStudentById?Id={}`, studentId)
+            await axios.delete(`http://localhost:8080/student/deleteStudentById?Id=${studentId}`);
+            return true;
         } catch (error) {
-            console.error(error);
+            return false;
         }
     }
 
-    return {studentList, fetchStudentList};
+
+    return {studentList, fetchStudentList, handleStudent,deleteStudentByStudentId,deleteStudentId};
 });
