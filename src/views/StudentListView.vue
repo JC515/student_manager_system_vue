@@ -112,14 +112,19 @@ export default {
 
     handleEdit(index) {
       this.dialogFormVisible = true;
+
       const studentStore = useStudentStore();
-      studentStore.deleteStudentId = studentStore.studentList[index].studentId;
-      this.form.studentId = studentStore.studentList[index].studentId;
-      this.form.age = studentStore.studentList[index].age;
-      this.form.studentName = studentStore.studentList[index].studentName;
-      this.form.gender = studentStore.studentList[index].gender;
-      this.form.nativePlace = studentStore.studentList[index].nativePlace;
-      this.form.identity = studentStore.studentList[index].identity;
+
+      const nowIndex = index + this.pageSize * (this.currentPage - 1)
+
+      studentStore.deleteStudentId = studentStore.studentList[nowIndex].studentId;
+
+      this.form.studentId = studentStore.studentList[nowIndex].studentId;
+      this.form.age = studentStore.studentList[nowIndex].age;
+      this.form.studentName = studentStore.studentList[nowIndex].studentName;
+      this.form.gender = studentStore.studentList[nowIndex].gender;
+      this.form.nativePlace = studentStore.studentList[nowIndex].nativePlace;
+      this.form.identity = studentStore.studentList[nowIndex].identity;
     },
 
 

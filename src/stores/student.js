@@ -39,6 +39,18 @@ export const useStudentStore = defineStore('student', () => {
             console.error(error);
         }
     }
+
+    async function getStudentById(studentId) {
+        try {
+            const response = await axios.get(`http://localhost:8080/student/getStudentById?Id=${studentId}`);
+            console.log(response);
+            handleStudent.value = response.data.data;
+            console.log(handleStudent.value);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     async function deleteStudentByStudentId(studentId) {
         try {
             console.log(`http://localhost:8080/student/deleteStudentById?Id={}`, studentId)
@@ -50,5 +62,5 @@ export const useStudentStore = defineStore('student', () => {
     }
 
 
-    return {studentList, fetchStudentList, handleStudent,deleteStudentByStudentId,deleteStudentId};
+    return {studentList, fetchStudentList, handleStudent, deleteStudentByStudentId, deleteStudentId,getStudentById};
 });
