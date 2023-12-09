@@ -27,10 +27,16 @@ export default {
     HeaderView
   },
   created() {
-    bus.on("student-delete-success", () => {
+    bus.on("successMessage", (outMessage) => {
       ElMessage({
-        message: '删除成功',
+        message: outMessage,
         type: 'success',
+      })
+    })
+    bus.on("errorMessage", (outMessage) => {
+      ElMessage({
+        message: outMessage,
+        type: 'error',
       })
     })
   }

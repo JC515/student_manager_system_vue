@@ -4,8 +4,8 @@ import axios from 'axios';
 
 export const useStudentStore = defineStore('student', () => {
     const studentList = ref([]);
-    const handleStudent = ref({})
     const deleteStudentId = ref(0)
+    let student = ref({})
 
     async function fetchStudentList() {
         try {
@@ -43,11 +43,46 @@ export const useStudentStore = defineStore('student', () => {
     async function getStudentById(studentId) {
         try {
             const response = await axios.get(`http://localhost:8080/student/getStudentById?Id=${studentId}`);
-            console.log(response);
-            handleStudent.value = response.data.data;
-            console.log(handleStudent.value);
+            student.value = response.data.data;
+            // gender 1设置为男 2设置为女
+            student.value = {
+                ...student.value,
+                gender: student.value.gender.toString() === '1' ? '男' : '女',
+                identity: student.value.identity.toString() === '1' ? '群众' : student.value.identity.toString() === '2' ? '团员' : student.value.identity.toString() === '3' ? '党员' : '未知'
+            }
+            console.log(student.value);
         } catch (error) {
             console.error(error);
+        }
+    }
+
+    async function updateStudent(student) {
+        try {
+            switch (student.gender) {
+                case '男':
+                    student.gender = 1;
+                    break;
+                default:
+                    student.gender = 2;
+            }
+
+            switch (student.identity) {
+                case '群众':
+                    student.identity = 1;
+                    break;
+                case '团员':
+                    student.identity = 2;
+                    break;
+                default:
+                    student.identity = 3;
+            }
+            console.log(student);
+
+            await axios.put(`http://localhost:8080/student/updateStudentByStudentId`, student);
+            return true;
+        } catch (error) {
+            console.log(error)
+            return false;
         }
     }
 
@@ -62,5 +97,13 @@ export const useStudentStore = defineStore('student', () => {
     }
 
 
-    return {studentList, fetchStudentList, handleStudent, deleteStudentByStudentId, deleteStudentId,getStudentById};
+    return {
+        studentList,
+        deleteStudentId,
+        student,
+        deleteStudentByStudentId,
+        fetchStudentList,
+        updateStudent,
+        getStudentById
+    };
 });

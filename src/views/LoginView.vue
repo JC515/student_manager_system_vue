@@ -17,7 +17,7 @@
             <el-form-item>
               <el-button @click="login" type="primary">登录</el-button>
               <el-button @click="register" type="info" class="register-button">注册</el-button>
-              <router-link to="/home">home</router-link>
+              <router-link to="/student_manager_system">home</router-link>
             </el-form-item>
           </el-form>
         </el-col>

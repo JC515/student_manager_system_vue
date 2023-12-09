@@ -21,7 +21,7 @@
     <el-dialog v-model="dialogFormVisible" title="编辑学生信息">
       <el-form :model="form" ref="studentForm" label-width="80px">
         <el-form-item label="学生ID">
-          <el-input v-model="form.studentId"></el-input>
+          <el-input v-model="form.studentId" disabled></el-input>
         </el-form-item>
         <el-form-item label="学生姓名">
           <el-input v-model="form.studentName"></el-input>
@@ -129,19 +129,70 @@ export default {
 
 
     async saveChanges() {
-      // 保存修改
+      const studentStore = useStudentStore();
+      const validationError = this.validateFormData();
+      if (validationError) {
+        bus.emit('errorMessage', validationError)
+        return;
+      }
+
+      try {
+        await studentStore.updateStudent(this.form);
+
+        await this.fetchData();
+
+        this.resetForm();
+
+        this.dialogFormVisible = false;
+        bus.emit('successMessage', '保存修改成功')
+      } catch (error) {
+        console.error("Save operation failed", error);
+      }
+    },
+    validateFormData() {
+      if (!['男', '女'].includes(this.form.gender)) {
+        return "性别必须为 '男' 或 '女'";
+      }
+
+      if (!['群众', '团员', '党员'].includes(this.form.identity)) {
+        return "身份必须为 '群众', '团员' 或 '党员'";
+      }
+
+      if (this.form.nativePlace.length > 30) {
+        return "籍贯长度不能超过30个字符";
+      }
+
+      if (this.form.age <= 0 || this.form.age >= 200) {
+        return "年龄有误";
+      }
+
+      if (this.form.studentName.length > 20) {
+        return "学生姓名长度不能超过20个字符";
+      }
+
+      return null;
+    },
+
+    resetForm() {
+      this.form = {
+        studentId: "",
+        studentName: "",
+        gender: "",
+        age: "",
+        nativePlace: "",
+        identity: "",
+      };
     },
 
     async deleteStudent() {
       const studentStore = useStudentStore();
       try {
         if (await studentStore.deleteStudentByStudentId(studentStore.deleteStudentId)) {
-          console.log("删除成功", studentStore.deleteStudentId);
           await this.fetchData();
-          bus.emit("student-delete-success")
+          bus.emit("successMessage", '删除成功')
         }
       } catch (error) {
-        console.error("删除操作被取消", error);
+        console.error("删除操作出现错误", error);
       }
       this.dialogFormVisible = false;
     },
