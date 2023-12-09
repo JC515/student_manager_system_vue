@@ -14,6 +14,9 @@ export const useStudentStore = defineStore('student', () => {
 
             let i = 1;
 
+            studentList.value.sort((a, b) => a.studentId.localeCompare(b.studentId));
+
+
             studentList.value.forEach((item) => {
                 item.id = i++;
                 // gender 1设置为男 2设置为女
@@ -96,6 +99,16 @@ export const useStudentStore = defineStore('student', () => {
         }
     }
 
+    async function addStudent(student) {
+        try {
+            const response = await axios.post(`http://localhost:8080/student/addStudent`, student);
+            return response.data.code !== 0;
+
+        } catch (error) {
+            return false;
+        }
+    }
+
 
     return {
         studentList,
@@ -104,6 +117,7 @@ export const useStudentStore = defineStore('student', () => {
         deleteStudentByStudentId,
         fetchStudentList,
         updateStudent,
-        getStudentById
+        getStudentById,
+        addStudent
     };
 });

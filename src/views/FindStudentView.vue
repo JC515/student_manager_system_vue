@@ -72,6 +72,7 @@
 <script>
 import {useStudentStore} from "@/stores/student";
 import bus from "@/Util/EventBus";
+import {useLogStore} from "@/stores/log";
 
 export default {
   data() {
@@ -103,6 +104,18 @@ export default {
         this.displayedData.push(studentStore.student)
         this.showData = true
         bus.emit('successMessage', "查询成功")
+        const log = useLogStore()
+        log.addLog({
+          name: '查找学生',
+          description: '查找了学生，姓名：' + studentStore.student.studentName + '，学号：' + studentStore.student.studentId,
+          time: new Date().toLocaleString('zh-CN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+          }),
+        });
       }
     },
     async getStudentById() {
@@ -133,20 +146,48 @@ export default {
         if (this.displayedData.length === 1)
           this.displayedData.pop()
         this.displayedData.push(studentStore.student)
+        const tempName = this.form.studentName
+        const tempId = this.form.studentId
 
         this.resetForm();
 
         this.dialogFormVisible = false;
         bus.emit('successMessage', '保存修改成功')
+        const log = useLogStore()
+        log.addLog({
+          name: '修改学生',
+          description: '修改了学生，姓名：' + tempName + '，学号：' + tempId,
+          time: new Date().toLocaleString('zh-CN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+          }),
+        });
       } catch (error) {
         console.error("Save operation failed", error);
       }
     },
     async deleteStudent() {
       const studentStore = useStudentStore();
+      const tempName = this.form.studentName;
+      const tempId = this.form.studentId;
       try {
         if (await studentStore.deleteStudentByStudentId(this.input)) {
           bus.emit("successMessage", '删除成功')
+          const log = useLogStore()
+          log.addLog({
+            name: '删除学生',
+            description: '删除了学生，姓名：' + tempName + '，学号：' + tempId,
+            time: new Date().toLocaleString('zh-CN', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+          });
         }
       } catch (error) {
         console.error("删除操作出现错误", error);

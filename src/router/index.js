@@ -33,6 +33,11 @@ const router = createRouter({
                     path: 'findStudent',
                     name: 'FindStudent',
                     component: () => import('@/views/FindStudentView.vue'),
+                },
+                {
+                    path: 'addStudent',
+                    name: 'AddStudent',
+                    component: () => import('@/views/AddStudentView.vue'),
                 }
             ],
         },
@@ -41,8 +46,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
     const user = useUserStore();
-    //需要删除！
-    if (!user.isAuthenticated || to.name === 'Login') {
+    if (user.isAuthenticated || to.name === 'Login') {
         next();
     } else {
         next({name: 'Login'});

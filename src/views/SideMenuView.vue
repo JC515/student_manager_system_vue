@@ -24,14 +24,18 @@
           </el-menu-item>
           <el-menu-item index="2-2" @click="handleMouseClick2_2">查找学生
           </el-menu-item>
+          <el-menu-item index="2-3" @click="handleMouseClick2_3">添加学生
+          </el-menu-item>
         </el-menu-item-group>
       </el-sub-menu>
     </el-menu>
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import {User, House} from '@element-plus/icons-vue';
+import bus from '../Util/EventBus';
+import router from "@/router";
 
 export default {
   data() {
@@ -48,13 +52,17 @@ export default {
   },
   methods: {
     handleMouseClick1() {
-      this.$router.push({name: 'Home'});
+      router.push({name: 'Home'});
     },
     handleMouseClick2_1() {
-      this.$router.push({name: 'StudentList'});
+      router.push({name: 'StudentList'});
+      bus.emit('studentListUpdate')
     },
     handleMouseClick2_2() {
-      this.$router.push({name: 'FindStudent'});
+      router.push({name: 'FindStudent'});
+    },
+    handleMouseClick2_3() {
+      router.push({name: 'AddStudent'});
     },
     handleMouseEnter() {
       this.isCollapse = false;

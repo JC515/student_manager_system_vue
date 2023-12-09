@@ -1,14 +1,18 @@
 <template>
   <el-header class="custom-header">
-    <el-row type="flex" justify="space-between" align="middle">
-      <el-col :span="8" style="margin-left: 25px">
+    <el-row type="flex" align="middle">
+      <el-col :span="2" style="margin-right: 30px">
+        <img src="../assets/1.png" alt="" width="50px" height="50px" @click="backHome">
+      </el-col>
+      <el-col :span="8">
         <div class="artistic-title">
           欢迎使用学生管理系统
         </div>
       </el-col>
 
-      <el-col :span="2">
+      <el-col :span="2" :offset="10">
         <div class="user-profile">
+          <span style="margin-right: 20px">admin</span>
           <span class="user-avatar">
             <el-avatar
                 src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
@@ -34,24 +38,34 @@
   </el-header>
 </template>
 
-<script lang="ts" setup>
+<script>
 import {ArrowDown} from '@element-plus/icons-vue'
-import {useRouter} from 'vue-router'
+import router from "@/router";
+import {useUserStore} from "@/stores/user";
 
-const router = useRouter()
+export default {
+  components: {
+    ArrowDown,
+  },
+  methods: {
+    backHome() {
+      router.push({name: 'Home'});
 
-const handleCommand = (command) => {
-  if (command === 'logout') {
-    // 处理退出登录逻辑，例如清除用户信息、跳转到登录页面等
-    router.push('/login')
-  }
+    },
+    handleCommand(command) {
+      if (command === 'logout') {
+        const user = useUserStore()
+        user.setAuthentication(false)
+        router.push('/login')
+      }
+    },
+  },
 }
 </script>
 
 <style scoped>
 .artistic-title {
   font-size: 24px;
-  margin: 0;
   font-style: italic;
 }
 

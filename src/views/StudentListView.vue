@@ -4,13 +4,13 @@
   </div>
   <div id="tableContainer">
     <el-table :data="displayedData" style="width: 100%">
-      <el-table-column prop="id" label="序号" width="auto"/>
-      <el-table-column prop="studentId" label="学生ID" width="auto"/>
-      <el-table-column prop="studentName" label="学生姓名" width="auto"/>
-      <el-table-column prop="gender" label="性别" width="auto"/>
-      <el-table-column prop="age" label="年龄" width="auto"/>
-      <el-table-column prop="nativePlace" label="籍贯" width="auto"/>
-      <el-table-column prop="identity" label="身份" width="auto"/>
+      <el-table-column prop="id" label="序号" width="auto" sortable/>
+      <el-table-column prop="studentId" label="学生ID" width="auto" sortable/>
+      <el-table-column prop="studentName" label="学生姓名" width="auto" sortable/>
+      <el-table-column prop="gender" label="性别" width="auto" sortable/>
+      <el-table-column prop="age" label="年龄" width="auto" sortable/>
+      <el-table-column prop="nativePlace" label="籍贯" width="auto" sortable/>
+      <el-table-column prop="identity" label="身份" width="auto" sortable/>
 
       <el-table-column label="操作" width="auto">
         <template #default="scope">
@@ -57,6 +57,9 @@
       </div>
     </el-dialog>
     <div class="pagination-block">
+      每页
+      <el-input v-model="pageSize" @input="handlePageSizeChange" style="width: 50px"></el-input>
+      项
       <div class="demonstration"></div>
       <el-pagination
           layout="prev, pager, next"
@@ -66,12 +69,14 @@
           @current-change="handleCurrentChange"
       />
     </div>
+    <div style="text-align: right;width: 100%">总人数：{{ tableData.length }}</div>
   </div>
 </template>
 
 <script>
 import {useStudentStore} from "@/stores/student";
 import bus from "@/Util/EventBus";
+import {useLogStore} from "@/stores/log";
 
 export default {
   data() {
@@ -140,11 +145,25 @@ export default {
         await studentStore.updateStudent(this.form);
 
         await this.fetchData();
+        const tempName = this.form.studentName
+        const tempId = this.form.studentId
 
         this.resetForm();
 
         this.dialogFormVisible = false;
         bus.emit('successMessage', '保存修改成功')
+        const log = useLogStore()
+        log.addLog({
+          name: '修改学生',
+          description: '修改了学生，姓名：' + tempName + '，学号：' + tempId,
+          time: new Date().toLocaleString('zh-CN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+          }),
+        });
       } catch (error) {
         console.error("Save operation failed", error);
       }
@@ -190,17 +209,39 @@ export default {
         if (await studentStore.deleteStudentByStudentId(studentStore.deleteStudentId)) {
           await this.fetchData();
           bus.emit("successMessage", '删除成功')
+          const log = useLogStore()
+          log.addLog({
+            name: '删除学生',
+            description: '删除了学生，姓名：' + this.form.studentName + '，学号：' + this.form.studentId,
+            time: new Date().toLocaleString('zh-CN', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+          });
         }
       } catch (error) {
         console.error("删除操作出现错误", error);
       }
       this.dialogFormVisible = false;
     },
+    handlePageSizeChange() {
+      if (parseInt(this.pageSize) >= 1 && parseInt(this.pageSize) <= this.tableData.length) {
+        this.pageSize = parseInt(this.pageSize);
+        this.currentPage = 1;
+        this.fetchData();
+      }
+    }
   },
 
   mounted() {
     this.fetchData();
   },
+  created() {
+    bus.on('studentListUpdate', this.fetchData)
+  }
 };
 </script>
 

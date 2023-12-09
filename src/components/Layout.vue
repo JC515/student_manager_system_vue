@@ -24,7 +24,7 @@ import bus from "@/Util/EventBus";
 export default {
   components: {
     SideMenu,
-    HeaderView
+    HeaderView,
   },
   created() {
     bus.on("successMessage", (outMessage) => {
